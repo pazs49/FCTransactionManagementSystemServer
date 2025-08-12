@@ -5,16 +5,29 @@ class TransactionCsvService
 
   def self.all
     return [] unless File.exist?(FILE_PATH)
-
     CSV.read(FILE_PATH, headers: true).map(&:to_h)
   end
 
   def self.add(transaction)
-    headers = %w[id description amount date]
+    headers = [
+      "Transaction Date",
+      "Account Number",
+      "Account Holder Name",
+      "Amount",
+      "Status"
+    ]
 
-    CSV.open(FILE_PATH, File.exist?(FILE_PATH) ? "ab" : "wb") do |csv|
-      csv << headers unless File.exist?(FILE_PATH)
-      csv << [ transaction[:id], transaction[:description], transaction[:amount], transaction[:date] ]
+    file_exists = File.exist?(FILE_PATH)
+
+    CSV.open(FILE_PATH, file_exists ? "ab" : "wb") do |csv|
+      csv << headers unless file_exists
+      csv << [
+        transaction[:transaction_date],
+        transaction[:account_number],
+        transaction[:account_holder_name],
+        transaction[:amount],
+        transaction[:status]
+      ]
     end
   end
 end
